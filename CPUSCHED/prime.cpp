@@ -30,17 +30,10 @@ int main() {
     queue<Process> sjfProcesses = processes; // Copy processes for SJF
     auto completed2 = simulateSJF(sjfProcesses);
     cout << "SJF Scheduling Results:" << endl;
-    printStatistics(completed2, outFile);
-    cout << endl;
-
-    // Simulate Priority scheduling
-    queue<Process> priorityProcesses = processes; // Copy processes for Priority
-    auto completed3 = simulatePriority(priorityProcesses);
-    cout << "Priority Scheduling Results:" << endl;
-    printStatistics(completed3, outFile);
-    cout << endl;
 
     
+    printStatistics(completed2, outFile);
+    cout << endl;
 
     return 0;
 }

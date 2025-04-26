@@ -13,9 +13,6 @@ struct Process {
     // Arrival time
     int arrivalTime; 
     
-    // Priority
-    int priority;
-    
     // CPU burst time
     int burstTime; 
     
@@ -29,7 +26,7 @@ struct Process {
     int turnaroundTime; 
 
  //Constructor
-    Process(int id, int at, int bt, int prio) : pid(id), arrivalTime(at), burstTime(bt), priority(prio),
+    Process(int id, int at, int bt) : pid(id), arrivalTime(at), burstTime(bt),
         startTime(0), waitingTime(0), turnaroundTime(0) {}
 };
 
@@ -47,9 +44,9 @@ void readProcessesFromFile(queue<Process>& processes) {
     int id = 0, arrivalTime, burstTime, priority;
     
     //Read Process data from the file until the end of file is reached
-    while (inputFile >> arrivalTime >> burstTime >> priority) {
+    while (inputFile >> arrivalTime >> burstTime) {
         //Create a process object with the read data and push it to the queue 
-        processes.push(Process(id, arrivalTime, burstTime, priority));
+        processes.push(Process(id, arrivalTime, burstTime));
         //Increment id -- next process
         ++id;
 
@@ -70,13 +67,6 @@ struct ArrivalComparator {
 struct BurstTimeComparator {
     bool operator()(const Process& p1, const Process& p2) const {
         return p1.burstTime > p2.burstTime;
-    }
-};
-
-// Compares processes based on priorities for Priority Scheduling
-struct PriorityComparator {
-    bool operator()(const Process& p1, const Process& p2) const {
-        return p1.priority > p2.priority;
     }
 };
 
@@ -174,62 +164,6 @@ static queue<Process> simulateSJF(queue<Process>& processes) {
 
     return completed2;
 }
-
-// Function to simulate the CPU scheduler using Priority Scheduling algorithm (Preemptive)
-static queue<Process> simulatePriority(queue<Process>& processes) 
-{
-    //Queue to store completed processes
-    std::queue<Process> completed3;
-    
-    int currentTime = 0;
-    
-    // Priority queue to store processes sorted based on burst times
-    priority_queue<Process, vector<Process>, PriorityComparator> readyQueue;
-
-    // Loop until both the incoming processes queue and the ready queue are empty
-    while (!processes.empty() || !readyQueue.empty()) 
-    {
-        // Process all arriving processes until the current time
-        // Update the ready queue accordingly
-        while (!processes.empty() && processes.front().arrivalTime <= currentTime) {
-            readyQueue.push(processes.front());
-            processes.pop();
-        }
-
-        // If there are processes ready to execute in the ready queue
-        if (!readyQueue.empty()) {
-
-            // Get the process with the shortest burst time from the ready queue
-            Process currentProcess = readyQueue.top();
-            readyQueue.pop();
-
-            // Set the start time of the current process to the current time
-            currentProcess.startTime = currentTime;
-
-            // Calculate turnaround time for the current process
-            currentProcess.turnaroundTime = currentTime + currentProcess.burstTime - currentProcess.arrivalTime;
-
-            // Calculate waiting time for the current process
-            currentProcess.waitingTime = currentProcess.startTime - currentProcess.arrivalTime;
-
-             // Update the current time by adding the burst time of the current process
-            currentTime += currentProcess.burstTime;
-            
-            // Push the completed current process into the completed queue
-            completed3.push(currentProcess);
-        } else {
-
-            // If there are no processes ready to execute, update the current time
-            // to the arrival time of the next incoming process
-            currentTime = processes.front().arrivalTime;
-        }
-
-        
-    }
-    
-    return completed3;
-}
-
 
 //Print Statistics function
 void printStatistics(const queue<Process>& processes, ofstream& outFile) {
