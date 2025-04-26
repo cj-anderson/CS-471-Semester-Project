@@ -41,7 +41,7 @@ void readProcessesFromFile(queue<Process>& processes) {
     }
     
     //Variables to store process attributes
-    int id = 0, arrivalTime, burstTime, priority;
+    int id = 0, arrivalTime, burstTime;
     
     //Read Process data from the file until the end of file is reached
     while (inputFile >> arrivalTime >> burstTime) {
